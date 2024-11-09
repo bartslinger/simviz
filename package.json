@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.32",
     "@types/three": "^0.169.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.14.0",
@@ -23,6 +24,7 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "dependencies": {
+    "jquery": "^3.7.1",
     "rustsim": "link:/Users/bart/testdir/rustsim/pkg",
     "three": "^0.170.0"
   }

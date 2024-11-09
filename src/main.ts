@@ -1,4 +1,5 @@
 // import './style.css';
+import './form.ts';
 
 import * as THREE from 'three';
 // @ts-ignore
