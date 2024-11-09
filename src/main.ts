@@ -14,8 +14,8 @@ const output = run_bifilar_pendulum_simulation(
 	new Float64Array([
 		// velocity
 		0.0,
-		0.0,
-		0.0,
+		0.5,
+		0.5,
 		// rotation rates
 		(50.0 * Math.PI) / 180,
 		0.0,
@@ -162,12 +162,6 @@ function animate() {
 	axesHelper.position.y = data.pe[i];
 	axesHelper.position.z = data.pd[i];
 
-	if (model) {
-		model.position.x = data.pn[i];
-		model.position.y = data.pe[i];
-		model.position.z = data.pd[i];
-	}
-
 	// arrow.position.x = data.pn[i];
 	// arrow.position.y = data.pe[i];
 	// arrow.position.z = data.pd[i];
@@ -198,8 +192,18 @@ function animate() {
 
 	const euler = new THREE.Euler(Math.PI, Math.PI / 2, Math.PI / 2); // Example: Rotate 90 degrees on X-axis
 	const quaternion2 = new THREE.Quaternion().setFromEuler(euler);
-	model?.setRotationFromQuaternion(quaternion.multiply(quaternion2));
+	const model_quaternion = quaternion.multiply(quaternion2);
 	// model?.setRotationFromQuaternion(quaternion2);
+
+	const model_offset = new THREE.Vector3(0.0, 0.03, -0.18);
+	const offset_rotatation = model_offset.applyQuaternion(model_quaternion);
+	if (model) {
+		model.position.x = data.pn[i] + offset_rotatation.x;
+		model.position.y = data.pe[i] + offset_rotatation.y;
+		model.position.z = data.pd[i] + offset_rotatation.z;
+	}
+	// model?.setRotationFromQuaternion(quaternion2);
+	model?.setRotationFromQuaternion(model_quaternion);
 
 	renderer.render(scene, camera);
 }
