@@ -1,5 +1,6 @@
 // import './style.css';
 import './form.ts';
+import $ from 'jquery';
 
 import * as THREE from 'three';
 // @ts-ignore
@@ -8,56 +9,88 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { run_bifilar_pendulum_simulation } from 'rustsim';
 
-const cg_z = 1.72 - 3;
-
 const spring1_b = [0.06, 0.07 / 2, 0.0];
 const spring2_b = [0.06, -0.07 / 2, 0.0];
 const spring1_w = [0.0, 0.315 / 2, -3.0];
 const spring2_w = [0.0, -0.315 / 2, -3.0];
+let t_start = Date.now();
 
-const output = run_bifilar_pendulum_simulation(
-	15,
-	1,
-	new Float64Array([
-		// velocity
-		0.0,
-		0.0,
-		0.0,
-		// rotation rates
-		(100.0 * Math.PI) / 180,
-		0.0,
-		0.0,
-		// rotation angles (euler)
-		0.0,
-		(90 * Math.PI) / 180,
-		0.0,
-		// position NED
-		0.0,
-		0.0,
-		cg_z
-	]),
-	new Float64Array(spring1_b),
-	new Float64Array(spring2_b),
-	new Float64Array(spring1_w),
-	new Float64Array(spring2_w)
-);
+let data:
+	| {
+			time: Float64Array;
+			u: Float64Array;
+			v: Float64Array;
+			w: Float64Array;
+			p: Float64Array;
+			q: Float64Array;
+			r: Float64Array;
+			q0: Float64Array;
+			q1: Float64Array;
+			q2: Float64Array;
+			q3: Float64Array;
+			pn: Float64Array;
+			pe: Float64Array;
+			pd: Float64Array;
+	  }
+	| undefined;
 
-const data = {
-	time: output.time(),
-	u: output.u(),
-	v: output.v(),
-	w: output.w(),
-	p: output.p(),
-	q: output.q(),
-	r: output.r(),
-	q0: output.q0(),
-	q1: output.q1(),
-	q2: output.q2(),
-	q3: output.q3(),
-	pn: output.pn(),
-	pe: output.pe(),
-	pd: output.pd()
+const runSimulation = () => {
+	t_start = Date.now();
+	const output = run_bifilar_pendulum_simulation(
+		15,
+		1,
+		new Float64Array([
+			// velocity
+			0.0,
+			0.0,
+			0.0,
+			// rotation rates
+			Number($('#initial-p').val()) * (Math.PI / 180),
+			Number($('#initial-q').val()) * (Math.PI / 180),
+			Number($('#initial-r').val()) * (Math.PI / 180),
+			// rotation angles (euler)
+			Number($('#initial-phi').val()) * (Math.PI / 180),
+			Number($('#initial-theta').val()) * (Math.PI / 180),
+			Number($('#initial-psi').val()) * (Math.PI / 180),
+			// position NED
+			Number($('#initial-pn').val()),
+			Number($('#initial-pe').val()),
+			Number($('#initial-pd').val())
+		]),
+		new Float64Array(spring1_b),
+		new Float64Array(spring2_b),
+		new Float64Array(spring1_w),
+		new Float64Array(spring2_w)
+	);
+
+	const data = {
+		time: output.time(),
+		u: output.u(),
+		v: output.v(),
+		w: output.w(),
+		p: output.p(),
+		q: output.q(),
+		r: output.r(),
+		q0: output.q0(),
+		q1: output.q1(),
+		q2: output.q2(),
+		q3: output.q3(),
+		pn: output.pn(),
+		pe: output.pe(),
+		pd: output.pd()
+	};
+	return data;
 };
+
+data = runSimulation();
+
+$('#run-simulation').on('click', () => {
+	if (data) {
+		data = undefined;
+		return;
+	}
+	data = runSimulation();
+});
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xbfe3dd);
@@ -136,7 +169,7 @@ camera.position.y = 2;
 camera.position.z = -2;
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, cg_z);
+controls.target.set(0, 0, Number($('#initial-pd').val()));
 
 // const geometry = new THREE.BoxGeometry();
 // geometry.scale(0.01, 0.01, 1.0);
@@ -224,36 +257,92 @@ spring2_points.push(new THREE.Vector3(0.0, -0.315 / 2, 0.0));
 	scene.add(spring2_line);
 }
 
-const t_start = Date.now();
-const dt = 1000 * (data.time[1] - data.time[0]);
+type State = {
+	u: number;
+	v: number;
+	w: number;
+	p: number;
+	q: number;
+	r: number;
+	q0: number;
+	q1: number;
+	q2: number;
+	q3: number;
+	pn: number;
+	pe: number;
+	pd: number;
+};
+
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
-	const now = Date.now();
-	const delta = now - t_start;
-	let i = Math.round(delta / dt);
-	i = i % data.time.length;
+	controls.target.set(0, 0, Number($('#initial-pd').val()));
+	let state: State;
+	if (!data) {
+		const euler = new THREE.Euler(
+			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-phi').val() ?? 0).toString()),
+			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-theta').val() ?? 0).toString()),
+			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-psi').val() ?? 0).toString())
+		);
+		const quaternion = new THREE.Quaternion().setFromEuler(euler).invert();
+		state = {
+			u: 0.0,
+			v: 0.0,
+			w: 0.0,
+			p: 0.0,
+			q: 0.0,
+			r: 0.0,
+			q0: quaternion.w,
+			q1: quaternion.x,
+			q2: quaternion.y,
+			q3: quaternion.z,
+			pn: Number($('#initial-pn').val()),
+			pe: Number($('#initial-pe').val()),
+			pd: Number($('#initial-pd').val())
+		};
+	} else {
+		const dt = 1000 * (data.time[1] - data.time[0]);
+		const now = Date.now();
+		const delta = now - t_start;
+		let i = Math.round(delta / dt);
+		i = i % data.time.length;
+		state = {
+			u: data.u[i],
+			v: data.v[i],
+			w: data.w[i],
+			p: data.p[i],
+			q: data.q[i],
+			r: data.r[i],
+			q0: data.q0[i],
+			q1: data.q1[i],
+			q2: data.q2[i],
+			q3: data.q3[i],
+			pn: data.pn[i],
+			pe: data.pe[i],
+			pd: data.pd[i]
+		};
+	}
 
 	// get time between previous update and now
-	// cube.position.x = data.pn[i];
-	// cube.position.y = data.pe[i];
-	// cube.position.z = data.pd[i];
+	// cube.position.x = data.pn;
+	// cube.position.y = data.pe;
+	// cube.position.z = data.pd;
 
-	axesHelper.position.x = data.pn[i];
-	axesHelper.position.y = data.pe[i];
-	axesHelper.position.z = data.pd[i];
+	axesHelper.position.x = state.pn;
+	axesHelper.position.y = state.pe;
+	axesHelper.position.z = state.pd;
 
-	// arrow.position.x = data.pn[i];
-	// arrow.position.y = data.pe[i];
-	// arrow.position.z = data.pd[i];
+	// arrow.position.x = state.pn;
+	// arrow.position.y = state.pe;
+	// arrow.position.z = state.pd;
 	//
-	// springArrow.position.x = data.pn[i];
-	// springArrow.position.y = data.pe[i];
-	// springArrow.position.z = data.pd[i];
+	// springArrow.position.x = state.pn;
+	// springArrow.position.y = state.pe;
+	// springArrow.position.z = state.pd;
 	//
-	// dragArrow.position.x = data.pn[i];
-	// dragArrow.position.y = data.pe[i];
-	// dragArrow.position.z = data.pd[i];
+	// dragArrow.position.x = state.pn;
+	// dragArrow.position.y = state.pe;
+	// dragArrow.position.z = state.pd;
 	//
 	// let Fs = new THREE.Vector3(state[10], state[11], state[12]);
 	// springArrow.setLength(Fs.length() / 9.80665);
@@ -267,7 +356,7 @@ function animate() {
 	// dragArrow.setLength((Fd.length() / 9.80665) * 10);
 	// dragArrow.setDirection(Fd.normalize());
 
-	const quaternion = new THREE.Quaternion(data.q1[i], data.q2[i], data.q3[i], data.q0[i]); // Note: Three.js uses (x, y, z, w)
+	const quaternion = new THREE.Quaternion(state.q1, state.q2, state.q3, state.q0); // Note: Three.js uses (x, y, z, w)
 	// cube.setRotationFromQuaternion(quaternion);
 	axesHelper.setRotationFromQuaternion(quaternion);
 
@@ -277,17 +366,25 @@ function animate() {
 	// model?.setRotationFromQuaternion(quaternion2);
 
 	// const inverse_quaternion = quaternion.clone().invert();
-	const spring1_body_offset = new THREE.Vector3(spring1_b[0], spring1_b[1], spring1_b[2]);
+	const spring1_body_offset = new THREE.Vector3(
+		Number.parseFloat(($('#spring1-body-x').val() ?? 0).toString()) ?? 0.0,
+		Number.parseFloat(($('#spring1-body-y').val() ?? 0).toString()) ?? 0.0,
+		Number.parseFloat(($('#spring1-body-z').val() ?? 0).toString()) ?? 0.0
+	);
 	const spring1_ned_offset = spring1_body_offset.applyQuaternion(quaternion);
-	spring1_bodysphere.position.x = data.pn[i] + spring1_ned_offset.x;
-	spring1_bodysphere.position.y = data.pe[i] + spring1_ned_offset.y;
-	spring1_bodysphere.position.z = data.pd[i] + spring1_ned_offset.z;
+	spring1_bodysphere.position.x = state.pn + spring1_ned_offset.x;
+	spring1_bodysphere.position.y = state.pe + spring1_ned_offset.y;
+	spring1_bodysphere.position.z = state.pd + spring1_ned_offset.z;
 
-	const spring2_body_offset = new THREE.Vector3(spring2_b[0], spring2_b[1], spring2_b[2]);
+	const spring2_body_offset = new THREE.Vector3(
+		Number.parseFloat(($('#spring2-body-x').val() ?? 0).toString()) ?? 0.0,
+		Number.parseFloat(($('#spring2-body-y').val() ?? 0).toString()) ?? 0.0,
+		Number.parseFloat(($('#spring2-body-z').val() ?? 0).toString()) ?? 0.0
+	);
 	const spring2_ned_offset = spring2_body_offset.applyQuaternion(quaternion);
-	spring2_bodysphere.position.x = data.pn[i] + spring2_ned_offset.x;
-	spring2_bodysphere.position.y = data.pe[i] + spring2_ned_offset.y;
-	spring2_bodysphere.position.z = data.pd[i] + spring2_ned_offset.z;
+	spring2_bodysphere.position.x = state.pn + spring2_ned_offset.x;
+	spring2_bodysphere.position.y = state.pe + spring2_ned_offset.y;
+	spring2_bodysphere.position.z = state.pd + spring2_ned_offset.z;
 
 	// spring1_line.attributes
 	const positionAttribute1 = spring1_line.geometry.getAttribute('position');
@@ -312,9 +409,9 @@ function animate() {
 	const model_offset = new THREE.Vector3(0.0, 0.03, -0.18);
 	const offset_rotatation = model_offset.applyQuaternion(model_quaternion);
 	if (model) {
-		model.position.x = data.pn[i] + offset_rotatation.x;
-		model.position.y = data.pe[i] + offset_rotatation.y;
-		model.position.z = data.pd[i] + offset_rotatation.z;
+		model.position.x = state.pn + offset_rotatation.x;
+		model.position.y = state.pe + offset_rotatation.y;
+		model.position.z = state.pd + offset_rotatation.z;
 	}
 	// model?.setRotationFromQuaternion(quaternion2);
 	model?.setRotationFromQuaternion(model_quaternion);

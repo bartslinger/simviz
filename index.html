@@ -12,7 +12,7 @@
 			<canvas class="w-full h-full" id="viewport"></canvas>
 			<script type="module" src="/src/main.ts"></script>
 		</div>
-		<div class="sm:w-96 h-1/2 sm:h-fit sm:max-h-full p-4 absolute top-0 left-0">
+		<div class="sm:w-96 h-1/2 sm:h-full sm:max-h-full p-4 absolute top-0 left-0">
 			<div class="h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4">
 				<h1 class="text-2xl font-semibold">UAV Inertia Tool</h1>
 				<div>
@@ -24,7 +24,7 @@
 						value="0.350"
 					/>
 				</div>
-				<div class="">
+				<div>
 					<label for="ixx" class="">Inertia Matrix (kg m^4)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
@@ -103,6 +103,163 @@
 							placeholder="Izz"
 						/>
 					</div>
+				</div>
+				<div>
+					<label for="spring1-body-x">Body attachment point 1 w.r.t. CG (m)</label>
+					<div class="grid grid-cols-3 gap-1">
+						<input
+							type="number"
+							id="spring1-body-x"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.06"
+							step="0.01"
+							placeholder="x"
+						/>
+						<input
+							type="number"
+							id="spring1-body-y"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.035"
+							step="0.01"
+							placeholder="y"
+						/>
+						<input
+							type="number"
+							id="spring1-body-z"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="0.01"
+							placeholder="z"
+						/>
+					</div>
+				</div>
+				<div>
+					<label for="spring2-body-x">Body attachment point 2 w.r.t. CG (m)</label>
+					<div class="grid grid-cols-3 gap-1">
+						<input
+							type="number"
+							id="spring2-body-x"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.06"
+							step="0.01"
+							placeholder="x"
+						/>
+						<input
+							type="number"
+							id="spring2-body-y"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="-0.035"
+							step="0.01"
+							placeholder="y"
+						/>
+						<input
+							type="number"
+							id="spring2-body-z"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="0.01"
+							placeholder="z"
+						/>
+					</div>
+				</div>
+				<div>
+					<label for="initial-p">Initial rotation rates (deg/s)</label>
+					<div class="grid grid-cols-3 gap-1">
+						<input
+							type="number"
+							id="initial-p"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="100.0"
+							step="1"
+							placeholder="p"
+						/>
+						<input
+							type="number"
+							id="initial-q"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="1"
+							placeholder="q"
+						/>
+						<input
+							type="number"
+							id="initial-r"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="1"
+							placeholder="r"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="initial-phi">Initial orientation RPY (deg)</label>
+					<div class="grid grid-cols-3 gap-1">
+						<input
+							type="number"
+							id="initial-phi"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="1"
+							placeholder="Roll"
+						/>
+						<input
+							type="number"
+							id="initial-theta"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="90.0"
+							step="1"
+							placeholder="Pitch"
+						/>
+						<input
+							type="number"
+							id="initial-psi"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="1"
+							placeholder="Yaw"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label for="initial-pn">Initial position NED (m)</label>
+					<div class="grid grid-cols-3 gap-1">
+						<input
+							type="number"
+							id="initial-pn"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="0.01"
+							placeholder="North"
+						/>
+						<input
+							type="number"
+							id="initial-pe"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="0.0"
+							step="0.01"
+							placeholder="East"
+						/>
+						<input
+							type="number"
+							id="initial-pd"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value="-1.28"
+							step="0.01"
+							placeholder="Down"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<button
+						type="button"
+						id="run-simulation"
+						class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+					>
+						Run Simulation
+					</button>
 				</div>
 			</div>
 		</div>
