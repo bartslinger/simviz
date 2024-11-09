@@ -2,8 +2,11 @@ import './style.css';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { run_bifilar_pendulum_simulation } from 'rustsim';
+
+const cg_z = 1.72 - 3;
 
 const output = run_bifilar_pendulum_simulation(
 	15,
@@ -14,7 +17,7 @@ const output = run_bifilar_pendulum_simulation(
 		0.0,
 		0.0,
 		// rotation rates
-		(30.0 * Math.PI) / 180,
+		(50.0 * Math.PI) / 180,
 		0.0,
 		0.0,
 		// rotation angles (euler)
@@ -24,7 +27,7 @@ const output = run_bifilar_pendulum_simulation(
 		// position NED
 		0.0,
 		0.0,
-		1.72
+		cg_z
 	])
 );
 
@@ -46,6 +49,8 @@ const data = {
 };
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xbfe3dd);
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer({
@@ -54,45 +59,89 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+{
+	const geometry = new THREE.BoxGeometry();
+	// geometry.deleteAttribute('uv');
+
+	const roomMaterial = new THREE.MeshLambertMaterial({
+		side: THREE.BackSide
+	});
+
+	{
+		const mainLight = new THREE.PointLight(0xffffff, 100, 100, 2);
+		mainLight.position.set(-1.0, 0, -5);
+
+		scene.add(mainLight);
+	}
+
+	const room = new THREE.Mesh(geometry, roomMaterial);
+	room.position.set(-0.757, 13.219, 0.717);
+	room.position.set(0, 0, -5.0);
+	room.scale.set(20.0, 20.0, 10.0);
+
+	scene.add(room);
+}
+
+// -------------------------
+
 // put the camera on the negative x-axis and make it point towards the origin
 // the z-axis of the world should be pointing down
 camera.up.set(0, 0, -1);
 camera.position.x = -3;
-camera.position.z = 2;
-// camera.lookAt(0, 0, 0);
+camera.position.y = 2;
+camera.position.z = -2;
+
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 2);
+controls.target.set(0, 0, cg_z);
 
-const geometry = new THREE.BoxGeometry();
-geometry.scale(0.1, 0.4, 0.05);
-const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-// const circle_geometry = new THREE.CircleGeometry(2, 32);
-// const circle_material = new THREE.MeshBasicMaterial({ color: 0x555555 });
-// const circle = new THREE.Mesh(circle_geometry, circle_material);
-// circle.setRotationFromEuler(new THREE.Euler(0, -Math.PI / 2, 0));
-// scene.add(circle);
-
-const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(-1, -1, 0);
-scene.add(pointLight);
-const light = new THREE.AmbientLight(0x909040); // soft white light
-scene.add(light);
+// const geometry = new THREE.BoxGeometry();
+// geometry.scale(0.01, 0.01, 1.0);
+// const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+// const cube = new THREE.Mesh(geometry, material);
+// scene.add(cube);
 
 const axesHelper = new THREE.AxesHelper(1);
 scene.add(axesHelper);
 
-const origin = new THREE.Vector3(0, 0, 0);
-const dir = new THREE.Vector3(1, 0, 0);
+// const geometry2 = new THREE.PlaneGeometry(5, 5);
+// const material2 = new THREE.MeshLambertMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+// const plane = new THREE.Mesh(geometry2, material2);
+// scene.add(plane);
 
-const arrow = new THREE.ArrowHelper(dir, origin, 1, 0xff0000);
-scene.add(arrow);
-const springArrow = new THREE.ArrowHelper(dir, origin, 1, 0x0000ff);
-scene.add(springArrow);
-const dragArrow = new THREE.ArrowHelper(dir, origin, 1, 0x00ff00);
-scene.add(dragArrow);
+// const origin = new THREE.Vector3(0, 0, 0);
+// const dir = new THREE.Vector3(1, 0, 0);
+
+// const arrow = new THREE.ArrowHelper(dir, origin, 1, 0xff0000);
+// scene.add(arrow);
+// const springArrow = new THREE.ArrowHelper(dir, origin, 1, 0x0000ff);
+// scene.add(springArrow);
+// const dragArrow = new THREE.ArrowHelper(dir, origin, 1, 0x00ff00);
+// scene.add(dragArrow);
+
+let model: any | undefined = undefined;
+const loader = new GLTFLoader();
+loader.load('/uav_low_poly/scene.gltf', (gltf) => {
+	model = gltf.scene;
+	model.scale.set(0.2, 0.2, 0.2);
+	scene.add(model);
+});
+
+let spring1_roomsphere: any | undefined = undefined;
+{
+	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
+	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+	spring1_roomsphere = new THREE.Mesh(geometry, material);
+	spring1_roomsphere.position.set(0.0, 0.315 / 2, -3.0);
+	scene.add(spring1_roomsphere);
+}
+let spring2_roomsphere: any | undefined = undefined;
+{
+	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
+	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+	spring2_roomsphere = new THREE.Mesh(geometry, material);
+	spring2_roomsphere.position.set(0.0, -0.315 / 2, -3.0);
+	scene.add(spring2_roomsphere);
+}
 
 const t_start = Date.now();
 const dt = 1000 * (data.time[1] - data.time[0]);
@@ -105,9 +154,19 @@ function animate() {
 	i = i % data.time.length;
 
 	// get time between previous update and now
-	cube.position.x = data.pn[i];
-	cube.position.y = data.pe[i];
-	cube.position.z = data.pd[i];
+	// cube.position.x = data.pn[i];
+	// cube.position.y = data.pe[i];
+	// cube.position.z = data.pd[i];
+
+	axesHelper.position.x = data.pn[i];
+	axesHelper.position.y = data.pe[i];
+	axesHelper.position.z = data.pd[i];
+
+	if (model) {
+		model.position.x = data.pn[i];
+		model.position.y = data.pe[i];
+		model.position.z = data.pd[i];
+	}
 
 	// arrow.position.x = data.pn[i];
 	// arrow.position.y = data.pe[i];
@@ -134,7 +193,13 @@ function animate() {
 	// dragArrow.setDirection(Fd.normalize());
 
 	const quaternion = new THREE.Quaternion(data.q1[i], data.q2[i], data.q3[i], data.q0[i]); // Note: Three.js uses (x, y, z, w)
-	cube.setRotationFromQuaternion(quaternion);
+	// cube.setRotationFromQuaternion(quaternion);
+	axesHelper.setRotationFromQuaternion(quaternion);
+
+	const euler = new THREE.Euler(Math.PI, Math.PI / 2, Math.PI / 2); // Example: Rotate 90 degrees on X-axis
+	const quaternion2 = new THREE.Quaternion().setFromEuler(euler);
+	model?.setRotationFromQuaternion(quaternion.multiply(quaternion2));
+	// model?.setRotationFromQuaternion(quaternion2);
 
 	renderer.render(scene, camera);
 }
