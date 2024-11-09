@@ -1,13 +1,98 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sim Visualization</title>
-  </head>
-  <body>
-    <canvas class="fixed inset-0" id="viewport"></canvas>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/src/style.css" />
+		<title>Sim Visualization</title>
+	</head>
+	<body>
+		<div class="fixed inset-0">
+			<canvas class="w-full h-full" id="viewport"></canvas>
+			<script type="module" src="/src/main.ts"></script>
+		</div>
+		<div class="sm:w-96 h-1/2 sm:h-fit sm:max-h-full p-4 absolute top-0 left-0">
+			<div class="h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4">
+				<h1 class="text-2xl font-semibold">UAV Inertia Tool</h1>
+				<div>
+					<label for="mass" class="">Mass (kg)</label>
+					<input
+						type="number"
+						id="mass"
+						class="w-full p-2 border border-gray-300 rounded-md"
+						value="0.350"
+					/>
+				</div>
+				<div class="">
+					<label for="ixx" class="">Inertia Matrix (kg m^4)</label>
+					<div class="grid grid-cols-3">
+						<input
+							type="number"
+							id="ixx"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Ixx"
+						/>
+						<input
+							type="number"
+							id="ixy"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Ixy"
+						/>
+						<input
+							type="number"
+							id="ixz"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Ixz"
+						/>
+						<input
+							type="number"
+							id="iyx"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Iyx"
+						/>
+						<input
+							type="number"
+							id="iyy"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Iyy"
+						/>
+						<input
+							type="number"
+							id="iyz"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Iyz"
+						/>
+						<input
+							type="number"
+							id="izx"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Izx"
+						/>
+						<input
+							type="number"
+							id="izy"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Izy"
+						/>
+						<input
+							type="number"
+							id="izz"
+							class="w-full p-2 border border-gray-300 rounded-md"
+							value=""
+							placeholder="Izz"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

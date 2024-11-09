@@ -1,4 +1,4 @@
-import './style.css';
+// import './style.css';
 
 import * as THREE from 'three';
 // @ts-ignore
@@ -61,10 +61,43 @@ const data = {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xbfe3dd);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const aspectRatio = () => {
+	if (window.innerWidth > 640) {
+		return (window.innerWidth - 416) / window.innerHeight;
+	} else {
+		return window.innerWidth / ((window.innerHeight * 3) / 2);
+	}
+};
 
+const camera = new THREE.PerspectiveCamera(75, aspectRatio(), 0.1, 1000);
+const setCameraOffset = () => {
+	if (window.innerWidth > 640) {
+		camera.fov = 75;
+		camera.setViewOffset(
+			window.innerWidth + 416,
+			window.innerHeight,
+			0,
+			0,
+			window.innerWidth,
+			window.innerHeight
+		);
+	} else {
+		camera.fov = 120;
+		camera.setViewOffset(
+			window.innerWidth,
+			(window.innerHeight * 3) / 2,
+			0,
+			0,
+			window.innerWidth,
+			window.innerHeight
+		);
+	}
+};
+setCameraOffset();
+
+const canvas_element = document.querySelector('#viewport') as HTMLCanvasElement;
 const renderer = new THREE.WebGLRenderer({
-	canvas: document.querySelector('#viewport') as HTMLCanvasElement
+	canvas: canvas_element
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -290,7 +323,8 @@ function animate() {
 animate();
 
 window.addEventListener('resize', () => {
-	camera.aspect = window.innerWidth / window.innerHeight;
+	// camera.aspect = (window.innerWidth + 416) / window.innerHeight;
+	setCameraOffset();
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
 });
