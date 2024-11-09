@@ -2,7 +2,48 @@ import './style.css';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
-import { data } from './data';
+
+import { run_bifilar_pendulum_simulation } from 'rustsim';
+
+const output = run_bifilar_pendulum_simulation(
+	15,
+	1,
+	new Float64Array([
+		// velocity
+		0.0,
+		0.0,
+		0.0,
+		// rotation rates
+		(30.0 * Math.PI) / 180,
+		0.0,
+		0.0,
+		// rotation angles (euler)
+		0.0,
+		(90 * Math.PI) / 180,
+		0.0,
+		// position NED
+		0.0,
+		0.0,
+		1.72
+	])
+);
+
+const data = {
+	time: output.time(),
+	u: output.u(),
+	v: output.v(),
+	w: output.w(),
+	p: output.p(),
+	q: output.q(),
+	r: output.r(),
+	q0: output.q0(),
+	q1: output.q1(),
+	q2: output.q2(),
+	q3: output.q3(),
+	pn: output.pn(),
+	pe: output.pe(),
+	pd: output.pd()
+};
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -54,46 +95,45 @@ const dragArrow = new THREE.ArrowHelper(dir, origin, 1, 0x00ff00);
 scene.add(dragArrow);
 
 const t_start = Date.now();
+const dt = 1000 * (data.time[1] - data.time[0]);
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
 	const now = Date.now();
 	const delta = now - t_start;
-	let i = Math.round(delta / 10);
-	i = i % data.length;
-
-	const state = data[i];
+	let i = Math.round(delta / dt);
+	i = i % data.time.length;
 
 	// get time between previous update and now
-	cube.position.x = state[0];
-	cube.position.y = state[1];
-	cube.position.z = state[2];
+	cube.position.x = data.pn[i];
+	cube.position.y = data.pe[i];
+	cube.position.z = data.pd[i];
 
-	arrow.position.x = state[0];
-	arrow.position.y = state[1];
-	arrow.position.z = state[2];
+	// arrow.position.x = data.pn[i];
+	// arrow.position.y = data.pe[i];
+	// arrow.position.z = data.pd[i];
+	//
+	// springArrow.position.x = data.pn[i];
+	// springArrow.position.y = data.pe[i];
+	// springArrow.position.z = data.pd[i];
+	//
+	// dragArrow.position.x = data.pn[i];
+	// dragArrow.position.y = data.pe[i];
+	// dragArrow.position.z = data.pd[i];
+	//
+	// let Fs = new THREE.Vector3(state[10], state[11], state[12]);
+	// springArrow.setLength(Fs.length() / 9.80665);
+	// springArrow.setDirection(Fs.normalize());
+	//
+	// let Fg = new THREE.Vector3(state[7], state[8], state[9]).normalize();
+	// arrow.setDirection(Fg);
+	// arrow.setLength(1);
+	//
+	// let Fd = new THREE.Vector3(state[13], state[14], state[15]);
+	// dragArrow.setLength((Fd.length() / 9.80665) * 10);
+	// dragArrow.setDirection(Fd.normalize());
 
-	springArrow.position.x = state[0];
-	springArrow.position.y = state[1];
-	springArrow.position.z = state[2];
-
-	dragArrow.position.x = state[0];
-	dragArrow.position.y = state[1];
-	dragArrow.position.z = state[2];
-
-	let Fs = new THREE.Vector3(state[10], state[11], state[12]);
-	springArrow.setLength(Fs.length() / 9.80665);
-	springArrow.setDirection(Fs.normalize());
-
-	let Fg = new THREE.Vector3(state[7], state[8], state[9]).normalize();
-	arrow.setDirection(Fg);
-	arrow.setLength(1);
-
-	let Fd = new THREE.Vector3(state[13], state[14], state[15]);
-	dragArrow.setLength((Fd.length() / 9.80665) * 10);
-	dragArrow.setDirection(Fd.normalize());
-
-	const quaternion = new THREE.Quaternion(state[4], state[5], state[6], state[3]); // Note: Three.js uses (x, y, z, w)
+	const quaternion = new THREE.Quaternion(data.q1[i], data.q2[i], data.q3[i], data.q0[i]); // Note: Three.js uses (x, y, z, w)
 	cube.setRotationFromQuaternion(quaternion);
 
 	renderer.render(scene, camera);
