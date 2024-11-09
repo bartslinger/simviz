@@ -1,6 +1,7 @@
 import './style.css';
 
 import * as THREE from 'three';
+// @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -241,7 +242,7 @@ function animate() {
 	const model_quaternion = quaternion.clone().multiply(quaternion2);
 	// model?.setRotationFromQuaternion(quaternion2);
 
-	const inverse_quaternion = quaternion.clone().invert();
+	// const inverse_quaternion = quaternion.clone().invert();
 	const spring1_body_offset = new THREE.Vector3(spring1_b[0], spring1_b[1], spring1_b[2]);
 	const spring1_ned_offset = spring1_body_offset.applyQuaternion(quaternion);
 	spring1_bodysphere.position.x = data.pn[i] + spring1_ned_offset.x;
@@ -287,3 +288,9 @@ function animate() {
 	renderer.render(scene, camera);
 }
 animate();
+
+window.addEventListener('resize', () => {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+});
