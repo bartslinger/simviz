@@ -12,11 +12,19 @@
 			<canvas class="w-full h-full" id="viewport"></canvas>
 			<script type="module" src="/src/main.ts"></script>
 		</div>
+		<div class="absolute bottom-0 right-2 text-xs">
+			3D Model
+			<a href="https://sketchfab.com/3d-models/uav-low-poly-5ab5afa6881646c082aa0171353316e8"
+				>"UAV Low Poly"</a
+			>
+			by <a href="https://sketchfab.com/DoobiDooba">DoobiDooba</a> licensed under
+			<a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
+		</div>
 		<div class="sm:w-96 h-1/2 sm:h-full sm:max-h-full p-4 absolute top-0 left-0">
 			<div class="h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4">
 				<h1 class="text-2xl font-semibold">UAV Inertia Tool</h1>
 				<div>
-					<label for="mass" class="">Mass (kg)</label>
+					<label for="mass" class="block mb-1">Mass (kg)</label>
 					<input
 						type="number"
 						id="mass"
@@ -25,7 +33,7 @@
 					/>
 				</div>
 				<div>
-					<label for="ixx" class="">Inertia Matrix (kg m^4)</label>
+					<label for="ixx" class="block mb-1">Inertia Matrix (kg m^4)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"
@@ -105,7 +113,9 @@
 					</div>
 				</div>
 				<div>
-					<label for="spring1-body-x">Body attachment point 1 w.r.t. CG (m)</label>
+					<label for="spring1-body-x" class="block mb-1"
+						>Body attachment point 1 w.r.t. CG (m)</label
+					>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"
@@ -134,7 +144,9 @@
 					</div>
 				</div>
 				<div>
-					<label for="spring2-body-x">Body attachment point 2 w.r.t. CG (m)</label>
+					<label for="spring2-body-x" class="block mb-1"
+						>Body attachment point 2 w.r.t. CG (m)</label
+					>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"
@@ -163,7 +175,7 @@
 					</div>
 				</div>
 				<div>
-					<label for="initial-p">Initial rotation rates (deg/s)</label>
+					<label for="initial-p" class="block mb-1">Initial rotation rates (deg/s)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"
@@ -193,7 +205,7 @@
 				</div>
 
 				<div>
-					<label for="initial-phi">Initial orientation RPY (deg)</label>
+					<label for="initial-phi" class="block mb-1">Initial orientation RPY (deg)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"
@@ -223,7 +235,7 @@
 				</div>
 
 				<div>
-					<label for="initial-pn">Initial position NED (m)</label>
+					<label for="initial-pn" class="block mb-1">Initial position NED (m)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
 							type="number"

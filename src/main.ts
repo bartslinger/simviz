@@ -35,6 +35,7 @@ let data:
 	| undefined;
 
 const runSimulation = () => {
+	$('#run-simulation').text('Stop Simulation');
 	t_start = Date.now();
 	const output = run_bifilar_pendulum_simulation(
 		15,
@@ -87,6 +88,7 @@ data = runSimulation();
 $('#run-simulation').on('click', () => {
 	if (data) {
 		data = undefined;
+		$('#run-simulation').text('Run Simulation');
 		return;
 	}
 	data = runSimulation();
