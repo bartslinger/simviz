@@ -8,16 +8,21 @@ import { run_bifilar_pendulum_simulation } from 'rustsim';
 
 const cg_z = 1.72 - 3;
 
+const spring1_b = [0.06, 0.07 / 2, 0.0];
+const spring2_b = [0.06, -0.07 / 2, 0.0];
+const spring1_w = [0.0, 0.315 / 2, -3.0];
+const spring2_w = [0.0, -0.315 / 2, -3.0];
+
 const output = run_bifilar_pendulum_simulation(
 	15,
 	1,
 	new Float64Array([
 		// velocity
 		0.0,
-		0.5,
-		0.5,
+		0.0,
+		0.0,
 		// rotation rates
-		(50.0 * Math.PI) / 180,
+		(100.0 * Math.PI) / 180,
 		0.0,
 		0.0,
 		// rotation angles (euler)
@@ -28,7 +33,11 @@ const output = run_bifilar_pendulum_simulation(
 		0.0,
 		0.0,
 		cg_z
-	])
+	]),
+	new Float64Array(spring1_b),
+	new Float64Array(spring2_b),
+	new Float64Array(spring1_w),
+	new Float64Array(spring2_w)
 );
 
 const data = {
@@ -101,7 +110,7 @@ controls.target.set(0, 0, cg_z);
 // scene.add(cube);
 
 const axesHelper = new THREE.AxesHelper(1);
-scene.add(axesHelper);
+// scene.add(axesHelper);
 
 // const geometry2 = new THREE.PlaneGeometry(5, 5);
 // const material2 = new THREE.MeshLambertMaterial({ color: 0xffff00, side: THREE.DoubleSide });
@@ -122,7 +131,8 @@ let model: any | undefined = undefined;
 const loader = new GLTFLoader();
 loader.load('/uav_low_poly/scene.gltf', (gltf) => {
 	model = gltf.scene;
-	model.scale.set(0.2, 0.2, 0.2);
+	const scale = 0.15;
+	model.scale.set(scale, scale, scale);
 	scene.add(model);
 });
 
@@ -131,7 +141,7 @@ let spring1_roomsphere: any | undefined = undefined;
 	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
 	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
 	spring1_roomsphere = new THREE.Mesh(geometry, material);
-	spring1_roomsphere.position.set(0.0, 0.315 / 2, -3.0);
+	spring1_roomsphere.position.set(spring1_w[0], spring1_w[1], spring1_w[2]);
 	scene.add(spring1_roomsphere);
 }
 let spring2_roomsphere: any | undefined = undefined;
@@ -139,8 +149,44 @@ let spring2_roomsphere: any | undefined = undefined;
 	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
 	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
 	spring2_roomsphere = new THREE.Mesh(geometry, material);
-	spring2_roomsphere.position.set(0.0, -0.315 / 2, -3.0);
+	spring2_roomsphere.position.set(spring2_w[0], spring2_w[1], spring2_w[2]);
 	scene.add(spring2_roomsphere);
+}
+let spring1_bodysphere: any | undefined = undefined;
+{
+	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
+	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+	spring1_bodysphere = new THREE.Mesh(geometry, material);
+	scene.add(spring1_bodysphere);
+}
+let spring2_bodysphere: any | undefined = undefined;
+{
+	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
+	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+	spring2_bodysphere = new THREE.Mesh(geometry, material);
+	scene.add(spring2_bodysphere);
+}
+
+let spring1_line: any | undefined;
+const spring1_points = [];
+spring1_points.push(new THREE.Vector3(spring1_w[0], spring1_w[1], spring1_w[2]));
+spring1_points.push(new THREE.Vector3(0.0, 0.315 / 2, 0.0));
+{
+	const material = new THREE.LineBasicMaterial({ color: 0x000000 });
+	const geometry = new THREE.BufferGeometry().setFromPoints(spring1_points);
+	spring1_line = new THREE.Line(geometry, material);
+	scene.add(spring1_line);
+}
+
+let spring2_line: any | undefined;
+const spring2_points = [];
+spring2_points.push(new THREE.Vector3(spring2_w[0], spring2_w[1], spring2_w[2]));
+spring2_points.push(new THREE.Vector3(0.0, -0.315 / 2, 0.0));
+{
+	const material = new THREE.LineBasicMaterial({ color: 0x000000 });
+	const geometry = new THREE.BufferGeometry().setFromPoints(spring2_points);
+	spring2_line = new THREE.Line(geometry, material);
+	scene.add(spring2_line);
 }
 
 const t_start = Date.now();
@@ -192,8 +238,41 @@ function animate() {
 
 	const euler = new THREE.Euler(Math.PI, Math.PI / 2, Math.PI / 2); // Example: Rotate 90 degrees on X-axis
 	const quaternion2 = new THREE.Quaternion().setFromEuler(euler);
-	const model_quaternion = quaternion.multiply(quaternion2);
+	const model_quaternion = quaternion.clone().multiply(quaternion2);
 	// model?.setRotationFromQuaternion(quaternion2);
+
+	const inverse_quaternion = quaternion.clone().invert();
+	const spring1_body_offset = new THREE.Vector3(spring1_b[0], spring1_b[1], spring1_b[2]);
+	const spring1_ned_offset = spring1_body_offset.applyQuaternion(quaternion);
+	spring1_bodysphere.position.x = data.pn[i] + spring1_ned_offset.x;
+	spring1_bodysphere.position.y = data.pe[i] + spring1_ned_offset.y;
+	spring1_bodysphere.position.z = data.pd[i] + spring1_ned_offset.z;
+
+	const spring2_body_offset = new THREE.Vector3(spring2_b[0], spring2_b[1], spring2_b[2]);
+	const spring2_ned_offset = spring2_body_offset.applyQuaternion(quaternion);
+	spring2_bodysphere.position.x = data.pn[i] + spring2_ned_offset.x;
+	spring2_bodysphere.position.y = data.pe[i] + spring2_ned_offset.y;
+	spring2_bodysphere.position.z = data.pd[i] + spring2_ned_offset.z;
+
+	// spring1_line.attributes
+	const positionAttribute1 = spring1_line.geometry.getAttribute('position');
+	positionAttribute1.setXYZ(
+		1,
+		spring1_bodysphere.position.x,
+		spring1_bodysphere.position.y,
+		spring1_bodysphere.position.z
+	);
+	positionAttribute1.needsUpdate = true;
+
+	// spring2_line.attributes
+	const positionAttribute2 = spring2_line.geometry.getAttribute('position');
+	positionAttribute2.setXYZ(
+		1,
+		spring2_bodysphere.position.x,
+		spring2_bodysphere.position.y,
+		spring2_bodysphere.position.z
+	);
+	positionAttribute2.needsUpdate = true;
 
 	const model_offset = new THREE.Vector3(0.0, 0.03, -0.18);
 	const offset_rotatation = model_offset.applyQuaternion(model_quaternion);
