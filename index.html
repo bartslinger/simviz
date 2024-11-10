@@ -21,9 +21,12 @@
 			<a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
 		</div>
 		<div class="sm:w-96 h-1/2 sm:h-full sm:max-h-full p-4 absolute top-0 left-0">
-			<div class="h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4">
+			<div
+				id="scroll-container"
+				class="relative h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4"
+			>
 				<h1 class="text-2xl font-semibold">UAV Inertia Tool</h1>
-				<div>
+				<div class="">
 					<label for="mass" class="block mb-1">Mass (kg)</label>
 					<input
 						type="number"
@@ -32,7 +35,7 @@
 						value="0.350"
 					/>
 				</div>
-				<div>
+				<div class="">
 					<label for="ixx" class="block mb-1">Inertia Matrix (kg m^4)</label>
 					<div class="grid grid-cols-3 gap-1">
 						<input
@@ -274,6 +277,14 @@
 					</button>
 				</div>
 			</div>
+			<div
+				id="scroll-shadow-top"
+				class="absolute pointer-events-none top-4 left-4 right-4 rounded-t-md h-4 bg-gradient-to-b from-black/20 to-transparent"
+			></div>
+			<div
+				id="scroll-shadow-bottom"
+				class="absolute pointer-events-none bottom-4 left-4 right-4 rounded-b-md h-4 bg-gradient-to-t from-black/20 to-transparent"
+			></div>
 		</div>
 	</body>
 </html>
