@@ -40,11 +40,47 @@ const runSimulation = () => {
 	const output = run_bifilar_pendulum_simulation(
 		15,
 		1,
+		// mass
+		Number($('#mass').val()),
+		// inertia
+		new Float64Array([
+			Number($('#ixx').val()),
+			Number($('#ixy').val()),
+			Number($('#ixz').val()),
+			Number($('#iyx').val()),
+			Number($('#iyy').val()),
+			Number($('#iyz').val()),
+			Number($('#izx').val()),
+			Number($('#izy').val()),
+			Number($('#izz').val())
+		]),
+		new Float64Array([
+			Number($('#spring1-body-x').val()),
+			Number($('#spring1-body-y').val()),
+			Number($('#spring1-body-z').val())
+		]),
+		new Float64Array([
+			Number($('#spring2-body-x').val()),
+			Number($('#spring2-body-y').val()),
+			Number($('#spring2-body-z').val())
+		]),
+		new Float64Array([
+			0.0,
+			Number($('#springs-spacing').val()) / 2.0,
+			-Number($('#springs-height').val())
+		]),
+		new Float64Array([
+			0.0,
+			-Number($('#springs-spacing').val()) / 2.0,
+			-Number($('#springs-height').val())
+		]),
+		// spring lengths
+		new Float64Array([Number($('#spring1-length').val()), Number($('#spring2-length').val())]),
 		new Float64Array([
 			// velocity
-			0.0,
-			0.0,
-			0.0,
+			Number($('#initial-u').val()),
+			Number($('#initial-v').val()),
+			Number($('#initial-w').val()),
 			// rotation rates
 			Number($('#initial-p').val()) * (Math.PI / 180),
 			Number($('#initial-q').val()) * (Math.PI / 180),
@@ -58,10 +94,17 @@ const runSimulation = () => {
 			Number($('#initial-pe').val()),
 			Number($('#initial-pd').val())
 		]),
-		new Float64Array(spring1_b),
-		new Float64Array(spring2_b),
-		new Float64Array(spring1_w),
-		new Float64Array(spring2_w)
+		new Float64Array([Number($('#springs-kp').val()), Number($('#springs-kd').val())]),
+		new Float64Array([
+			Number($('#damping-u').val()),
+			Number($('#damping-v').val()),
+			Number($('#damping-w').val())
+		]),
+		new Float64Array([
+			Number($('#damping-p').val()),
+			Number($('#damping-q').val()),
+			Number($('#damping-r').val())
+		])
 	);
 
 	const data = {
@@ -85,7 +128,8 @@ const runSimulation = () => {
 
 data = runSimulation();
 
-$('#run-simulation').on('click', () => {
+$('#parameters-form').on('submit', (e) => {
+	e.preventDefault();
 	if (data) {
 		data = undefined;
 		$('#run-simulation').text('Run Simulation');
@@ -282,9 +326,9 @@ function animate() {
 	let state: State;
 	if (!data) {
 		const euler = new THREE.Euler(
-			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-phi').val() ?? 0).toString()),
-			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-theta').val() ?? 0).toString()),
-			-(Math.PI / 180.0) * Number.parseFloat(($('#initial-psi').val() ?? 0).toString())
+			-(Math.PI / 180.0) * Number($('#initial-phi').val()),
+			-(Math.PI / 180.0) * Number($('#initial-theta').val()),
+			-(Math.PI / 180.0) * Number($('#initial-psi').val())
 		);
 		const quaternion = new THREE.Quaternion().setFromEuler(euler).invert();
 		state = {
@@ -325,38 +369,9 @@ function animate() {
 		};
 	}
 
-	// get time between previous update and now
-	// cube.position.x = data.pn;
-	// cube.position.y = data.pe;
-	// cube.position.z = data.pd;
-
 	axesHelper.position.x = state.pn;
 	axesHelper.position.y = state.pe;
 	axesHelper.position.z = state.pd;
-
-	// arrow.position.x = state.pn;
-	// arrow.position.y = state.pe;
-	// arrow.position.z = state.pd;
-	//
-	// springArrow.position.x = state.pn;
-	// springArrow.position.y = state.pe;
-	// springArrow.position.z = state.pd;
-	//
-	// dragArrow.position.x = state.pn;
-	// dragArrow.position.y = state.pe;
-	// dragArrow.position.z = state.pd;
-	//
-	// let Fs = new THREE.Vector3(state[10], state[11], state[12]);
-	// springArrow.setLength(Fs.length() / 9.80665);
-	// springArrow.setDirection(Fs.normalize());
-	//
-	// let Fg = new THREE.Vector3(state[7], state[8], state[9]).normalize();
-	// arrow.setDirection(Fg);
-	// arrow.setLength(1);
-	//
-	// let Fd = new THREE.Vector3(state[13], state[14], state[15]);
-	// dragArrow.setLength((Fd.length() / 9.80665) * 10);
-	// dragArrow.setDirection(Fd.normalize());
 
 	const quaternion = new THREE.Quaternion(state.q1, state.q2, state.q3, state.q0); // Note: Three.js uses (x, y, z, w)
 	// cube.setRotationFromQuaternion(quaternion);

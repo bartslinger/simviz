@@ -30,14 +30,12 @@ const updateScrollShadows = () => {
 	const scrollBottom = scrollHeight - height - scrollTop;
 
 	if (scrollTop <= 20) {
-		console.log('hide');
 		$('#scroll-shadow-top').css('opacity', 0.05 * scrollTop);
 	} else {
 		$('#scroll-shadow-top').css('opacity', 1);
 	}
 
 	if (scrollBottom <= 20) {
-		console.log('hide');
 		$('#scroll-shadow-bottom').css('opacity', 0.05 * scrollBottom);
 	} else {
 		$('#scroll-shadow-bottom').css('opacity', 1);
@@ -46,5 +44,9 @@ const updateScrollShadows = () => {
 updateScrollShadows();
 
 $('#scroll-container').on('scroll', function () {
+	updateScrollShadows();
+});
+
+window.addEventListener('resize', function () {
 	updateScrollShadows();
 });
