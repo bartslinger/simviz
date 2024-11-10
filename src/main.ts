@@ -9,10 +9,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import { run_bifilar_pendulum_simulation } from 'rustsim';
 
-const spring1_b = [0.06, 0.07 / 2, 0.0];
-const spring2_b = [0.06, -0.07 / 2, 0.0];
-const spring1_w = [0.0, 0.315 / 2, -3.0];
-const spring2_w = [0.0, -0.315 / 2, -3.0];
 let t_start = Date.now();
 
 let data:
@@ -38,8 +34,8 @@ const runSimulation = () => {
 	$('#run-simulation').text('Stop Simulation');
 	t_start = Date.now();
 	const output = run_bifilar_pendulum_simulation(
-		15,
-		1,
+		Number($('#sim-duration').val()),
+		Number($('#sim-step').val()),
 		// mass
 		Number($('#mass').val()),
 		// inertia
@@ -255,7 +251,7 @@ let spring1_roomsphere: any | undefined = undefined;
 	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
 	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
 	spring1_roomsphere = new THREE.Mesh(geometry, material);
-	spring1_roomsphere.position.set(spring1_w[0], spring1_w[1], spring1_w[2]);
+	spring1_roomsphere.position.set(0.0, 0.0, 0.0);
 	scene.add(spring1_roomsphere);
 }
 let spring2_roomsphere: any | undefined = undefined;
@@ -263,7 +259,7 @@ let spring2_roomsphere: any | undefined = undefined;
 	const geometry = new THREE.SphereGeometry(0.03, 16, 16);
 	const material = new THREE.MeshLambertMaterial({ color: 0x0000ff });
 	spring2_roomsphere = new THREE.Mesh(geometry, material);
-	spring2_roomsphere.position.set(spring2_w[0], spring2_w[1], spring2_w[2]);
+	spring2_roomsphere.position.set(0.0, 0.0, 0.0);
 	scene.add(spring2_roomsphere);
 }
 let spring1_bodysphere: any | undefined = undefined;
@@ -283,7 +279,7 @@ let spring2_bodysphere: any | undefined = undefined;
 
 let spring1_line: any | undefined;
 const spring1_points = [];
-spring1_points.push(new THREE.Vector3(spring1_w[0], spring1_w[1], spring1_w[2]));
+spring1_points.push(new THREE.Vector3(0.0, 0.0, 0.0));
 spring1_points.push(new THREE.Vector3(0.0, 0.315 / 2, 0.0));
 {
 	const material = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -294,7 +290,7 @@ spring1_points.push(new THREE.Vector3(0.0, 0.315 / 2, 0.0));
 
 let spring2_line: any | undefined;
 const spring2_points = [];
-spring2_points.push(new THREE.Vector3(spring2_w[0], spring2_w[1], spring2_w[2]));
+spring2_points.push(new THREE.Vector3(0.0, 0.0, 0.0));
 spring2_points.push(new THREE.Vector3(0.0, -0.315 / 2, 0.0));
 {
 	const material = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -393,6 +389,10 @@ function animate() {
 	spring1_bodysphere.position.y = state.pe + spring1_ned_offset.y;
 	spring1_bodysphere.position.z = state.pd + spring1_ned_offset.z;
 
+	spring1_roomsphere.position.x = 0.0;
+	spring1_roomsphere.position.y = Number($('#springs-spacing').val()) / 2.0;
+	spring1_roomsphere.position.z = -Number($('#springs-height').val());
+
 	const spring2_body_offset = new THREE.Vector3(
 		Number.parseFloat(($('#spring2-body-x').val() ?? 0).toString()) ?? 0.0,
 		Number.parseFloat(($('#spring2-body-y').val() ?? 0).toString()) ?? 0.0,
@@ -403,8 +403,18 @@ function animate() {
 	spring2_bodysphere.position.y = state.pe + spring2_ned_offset.y;
 	spring2_bodysphere.position.z = state.pd + spring2_ned_offset.z;
 
+	spring2_roomsphere.position.x = 0.0;
+	spring2_roomsphere.position.y = -Number($('#springs-spacing').val()) / 2.0;
+	spring2_roomsphere.position.z = -Number($('#springs-height').val());
+
 	// spring1_line.attributes
 	const positionAttribute1 = spring1_line.geometry.getAttribute('position');
+	positionAttribute1.setXYZ(
+		0,
+		spring1_roomsphere.position.x,
+		spring1_roomsphere.position.y,
+		spring1_roomsphere.position.z
+	);
 	positionAttribute1.setXYZ(
 		1,
 		spring1_bodysphere.position.x,
@@ -415,6 +425,12 @@ function animate() {
 
 	// spring2_line.attributes
 	const positionAttribute2 = spring2_line.geometry.getAttribute('position');
+	positionAttribute2.setXYZ(
+		0,
+		spring2_roomsphere.position.x,
+		spring2_roomsphere.position.y,
+		spring2_roomsphere.position.z
+	);
 	positionAttribute2.setXYZ(
 		1,
 		spring2_bodysphere.position.x,
