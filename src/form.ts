@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import * as Plotly from 'plotly.js-dist';
 
 $('#ixy').on('input', function () {
 	const value = $(this).val();
@@ -19,6 +20,19 @@ $('#iyz').on('input', function () {
 	if (value) {
 		$('#izy').val(-value);
 	}
+});
+
+$('#close-plot-button').on('click', function (e) {
+	e.preventDefault();
+	$('#plot-container').hide();
+	$('#open-plot-button').show();
+});
+
+$('#open-plot-button').on('click', function (e) {
+	e.preventDefault();
+	$('#plot-container').show();
+	Plotly.Plots.resize(document.getElementById('plotview'));
+	$('#open-plot-button').hide();
 });
 
 const updateScrollShadows = () => {

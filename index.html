@@ -21,8 +21,8 @@
 				by <a href="https://sketchfab.com/DoobiDooba">DoobiDooba</a> licensed under
 				<a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>
 			</div>
-			<div class="absolute inset-0 flex flex-col sm:flex-row pointer-events-none">
-				<div class="relative sm:w-96 h-1/2 sm:h-full sm:max-h-full p-4">
+			<div class="fixed inset-0 flex flex-col sm:flex-row pointer-events-none">
+				<div class="relative w-full sm:min-w-96 sm:max-w-96 h-1/2 sm:h-full sm:max-h-full p-4">
 					<div
 						id="scroll-container"
 						class="relative h-full overflow-auto bg-white w-full p-4 rounded-md shadow-md space-y-4 pointer-events-auto"
@@ -180,7 +180,7 @@
 									id="spring1-body-x"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="0.06"
-									step="0.01"
+									step="0.001"
 									placeholder="x"
 								/>
 								<input
@@ -188,7 +188,7 @@
 									id="spring1-body-y"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="0.035"
-									step="0.01"
+									step="0.001"
 									placeholder="y"
 								/>
 								<input
@@ -196,7 +196,7 @@
 									id="spring1-body-z"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="0.0"
-									step="0.01"
+									step="0.001"
 									placeholder="z"
 								/>
 							</div>
@@ -212,7 +212,7 @@
 									id="spring2-body-x"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="0.06"
-									step="0.01"
+									step="0.001"
 									placeholder="x"
 								/>
 								<input
@@ -220,7 +220,7 @@
 									id="spring2-body-y"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="-0.035"
-									step="0.01"
+									step="0.001"
 									placeholder="y"
 								/>
 								<input
@@ -228,7 +228,7 @@
 									id="spring2-body-z"
 									class="w-full p-2 border border-gray-300 rounded-md"
 									value="0.0"
-									step="0.01"
+									step="0.001"
 									placeholder="z"
 								/>
 							</div>
@@ -393,7 +393,7 @@
 									type="number"
 									id="springs-kp"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="800"
+									value="50000"
 									step="1"
 									placeholder="Proportional gain"
 								/>
@@ -401,7 +401,7 @@
 									type="number"
 									id="springs-kd"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="22"
+									value="100"
 									step="1"
 									placeholder="Damping gain"
 								/>
@@ -477,8 +477,10 @@
 						class="absolute pointer-events-none bottom-4 left-4 right-4 rounded-b-md h-6 bg-gradient-to-t from-black/30 to-transparent"
 					></div>
 				</div>
-				<div class="w-full flex justify-center items-start">
-					<div class="w-full sm:w-fit mx-4 sm:mt-4 pointer-events-auto">
+				<div
+					class="relative overflow-auto w-full h-full flex flex-col px-4 justify-between items-center"
+				>
+					<div class="w-full sm:w-fit sm:mt-4 pointer-events-auto flex gap-2">
 						<button
 							type="submit"
 							id="run-simulation"
@@ -486,6 +488,58 @@
 						>
 							Run Simulation
 						</button>
+						<button
+							id="open-plot-button"
+							type="button"
+							class="py-2.5 px-2.5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="w-5 h-5"
+							>
+								<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+								<path d="M3 3v18h18" />
+								<path d="M20 18v3" />
+								<path d="M16 16v5" />
+								<path d="M12 13v8" />
+								<path d="M8 16v5" />
+								<path d="M3 11c6 0 5 -5 9 -5s3 5 9 5" />
+							</svg>
+						</button>
+					</div>
+					<div
+						id="plot-container"
+						class="hidden relative pointer-events-auto my-4 flex-grow sm:flex-grow-0 h-64 bg-white w-full rounded-md shadow-md pt-12 sm:pt-4 p-4"
+					>
+						<div id="plotview" class="h-full w-full"></div>
+						<div class="absolute right-0 top-0">
+							<button id="close-plot-button" class="p-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="h-5 w-5"
+								>
+									<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+									<path d="M18 6l-12 12" />
+									<path d="M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
