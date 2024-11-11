@@ -31,7 +31,10 @@ $('#close-plot-button').on('click', function (e) {
 $('#open-plot-button').on('click', function (e) {
 	e.preventDefault();
 	$('#plot-container').show();
-	Plotly.Plots.resize(document.getElementById('plotview'));
+	const plotview = document.getElementById('plotview');
+	if (plotview) {
+		Plotly.Plots.resize(plotview);
+	}
 	$('#open-plot-button').hide();
 });
 

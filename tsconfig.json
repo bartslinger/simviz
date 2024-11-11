@@ -18,7 +18,13 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "plotly.js-dist": [
+        "node_modules/@types/plotly.js"
+      ]
+    }
   },
   "include": ["src"]
 }

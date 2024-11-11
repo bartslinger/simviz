@@ -123,45 +123,47 @@ const runSimulation = () => {
 	};
 
 	const plotview = document.getElementById('plotview');
-	Plotly.react(
-		plotview,
-		[
+	if (plotview) {
+		Plotly.react(
+			plotview,
+			[
+				{
+					name: 'roll rate (rad/s)',
+					x: data.time,
+					y: data.p
+				},
+				{
+					name: 'pitch rate (rad/s)',
+					x: data.time,
+					y: data.q
+				},
+				{
+					name: 'yaw rate (rad/s)',
+					x: data.time,
+					y: data.r
+				}
+			],
 			{
-				name: 'roll rate (rad/s)',
-				x: data.time,
-				y: data.p
+				margin: { t: 0, b: 20, l: 20, r: 100 },
+				legend: {
+					x: 1, // Position on x-axis (1 is far right)
+					y: 1, // Position on y-axis (0 is bottom)
+					xanchor: 'right', // Anchor to the right of the legend box
+					yanchor: 'top', // Anchor to the bottom of the legend box
+					orientation: 'h' // Horizontal legend layout
+				}
+				// xaxis: {
+				// 	title: {
+				// 		text: 'Time (s)'
+				// 	}
+				// }
 			},
 			{
-				name: 'pitch rate (rad/s)',
-				x: data.time,
-				y: data.q
-			},
-			{
-				name: 'yaw rate (rad/s)',
-				x: data.time,
-				y: data.r
+				displayModeBar: true,
+				responsive: true
 			}
-		],
-		{
-			margin: { t: 0, b: 20, l: 20, r: 100 },
-			legend: {
-				x: 1, // Position on x-axis (1 is far right)
-				y: 1, // Position on y-axis (0 is bottom)
-				xanchor: 'right', // Anchor to the right of the legend box
-				yanchor: 'top', // Anchor to the bottom of the legend box
-				orientation: 'h' // Horizontal legend layout
-			}
-			// xaxis: {
-			// 	title: {
-			// 		text: 'Time (s)'
-			// 	}
-			// }
-		},
-		{
-			displayModeBar: true,
-			responsive: true
-		}
-	);
+		);
+	}
 
 	return data;
 };
