@@ -35,7 +35,8 @@
 								type="number"
 								id="mass"
 								class="w-full p-2 border border-gray-300 rounded-md"
-								value="0.350"
+								value="0.980"
+								step="0.01"
 							/>
 						</div>
 
@@ -46,7 +47,7 @@
 									type="number"
 									id="ixx"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.001"
+									value="0.0161"
 									step="0.00001"
 									placeholder="Ixx"
 								/>
@@ -79,7 +80,7 @@
 									type="number"
 									id="iyy"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.001"
+									value="0.01"
 									step="0.00001"
 									placeholder="Iyy"
 								/>
@@ -113,7 +114,7 @@
 									type="number"
 									id="izz"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.001"
+									value="0.01"
 									step="0.00001"
 									placeholder="Izz"
 								/>
@@ -141,7 +142,7 @@
 									type="number"
 									id="springs-spacing"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.315"
+									value="0.35"
 									step="0.001"
 									placeholder="Spacing"
 								/>
@@ -155,7 +156,7 @@
 									type="number"
 									id="spring1-length"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="1.65"
+									value="1.55"
 									step="0.01"
 									placeholder="String 1"
 								/>
@@ -163,7 +164,7 @@
 									type="number"
 									id="spring2-length"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="1.65"
+									value="1.55"
 									step="0.01"
 									placeholder="String 2"
 								/>
@@ -187,7 +188,7 @@
 									type="number"
 									id="spring1-body-y"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.035"
+									value="0.175"
 									step="0.001"
 									placeholder="y"
 								/>
@@ -219,7 +220,7 @@
 									type="number"
 									id="spring2-body-y"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="-0.035"
+									value="-0.175"
 									step="0.001"
 									placeholder="y"
 								/>
@@ -351,7 +352,7 @@
 									type="number"
 									id="initial-pd"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="-1.28"
+									value="-1.38"
 									step="0.01"
 									placeholder="Down"
 								/>
@@ -445,7 +446,7 @@
 									type="number"
 									id="damping-p"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.0005"
+									value="0.005"
 									step="0.0001"
 									placeholder="p"
 								/>
@@ -453,7 +454,7 @@
 									type="number"
 									id="damping-q"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.0005"
+									value="0.005"
 									step="0.0001"
 									placeholder="q"
 								/>
@@ -461,7 +462,7 @@
 									type="number"
 									id="damping-r"
 									class="w-full p-2 border border-gray-300 rounded-md"
-									value="0.0005"
+									value="0.005"
 									step="0.0001"
 									placeholder="r"
 								/>
@@ -484,14 +485,14 @@
 						<button
 							type="submit"
 							id="run-simulation"
-							class="shadow-md w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+							class="shadow-md w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
 						>
 							Run Simulation
 						</button>
 						<button
 							id="open-plot-button"
 							type="button"
-							class="py-2.5 px-2.5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+							class="py-2.5 px-2.5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
